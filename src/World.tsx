@@ -1,17 +1,14 @@
 import React from 'react';
 import { useMousePos, useMouseUp } from './hooks';
 import { WORLD_WIDTH, WORLD_HEIGHT, WORLD_UNIT } from './common';
-import {
-  reducer,
-  initWorldState,
-  ActionType as At,
-  DragSubject,
-} from './state';
+import { ActionType as At, DragSubject } from './state';
 import { Vec2 } from './geometry';
 import Camera from './Camera';
+import Obj from './Obj';
+import { StateContext } from './App';
 
 const World: React.FC<{}> = () => {
-  const [state, dispatch] = React.useReducer(reducer, initWorldState);
+  const [state, dispatch] = React.useContext(StateContext);
 
   const ref = useMousePos<SVGSVGElement>((left, top) => {
     dispatch({
@@ -53,6 +50,13 @@ const World: React.FC<{}> = () => {
         xmlns="http://www.w3.org/2000/svg"
         ref={ref}
       >
+        {state.entities.map(attrs => (
+          <Obj
+            key={attrs.id}
+            {...attrs}
+            {...state.objects.find(obj => obj.name === attrs.obj)!}
+          />
+        ))}
         <Camera
           attrs={state.camera}
           onRootDown={handleCamRoot}

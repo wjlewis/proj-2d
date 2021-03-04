@@ -30,6 +30,13 @@ export class Vec2 {
     return recv.norm().scale(f);
   }
 
+  projLen(recv: Vec2): number {
+    const f = this.dot(recv) / recv.len();
+    const projected = recv.norm().scale(f);
+    const sign = f > 0 ? 1 : -1;
+    return sign * projected.len();
+  }
+
   len(): number {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }
@@ -72,5 +79,35 @@ export class HMat2 {
 
   moveTo(v: Vec2): HMat2 {
     return new HMat2(this.ix, this.iy, this.jx, this.jy, v.x, v.y);
+  }
+
+  generateTransform(): HMat2 {
+    const iLocal = new Vec2(this.ix, this.iy);
+    const jLocal = new Vec2(this.jx, this.jy);
+    const [i1, j1] = [new Vec2(1, 0), new Vec2(0, 1)].map(v => {
+      const xLocal = v.projLen(iLocal);
+      const yLocal = v.projLen(jLocal);
+      return new Vec2(xLocal, yLocal);
+    });
+
+    return new HMat2(
+      i1.x,
+      i1.y,
+      j1.x,
+      j1.y,
+      -i1.x * this.wx - j1.x * this.wy,
+      -i1.y * this.wx - j1.y * this.wy
+    );
+  }
+
+  after(mat: HMat2): HMat2 {
+    return new HMat2(
+      this.ix * mat.ix + this.jx * mat.iy,
+      this.iy * mat.ix + this.jy * mat.iy,
+      this.ix * mat.jx + this.jx * mat.jy,
+      this.iy * mat.jx + this.jy * mat.jy,
+      this.ix * mat.wx + this.jx * mat.wy + this.wx,
+      this.iy * mat.wx + this.jy * mat.wy + this.wy
+    );
   }
 }

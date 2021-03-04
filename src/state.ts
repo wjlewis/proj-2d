@@ -1,27 +1,93 @@
-import { CameraAttrs } from './Camera';
 import { HMat2, Vec2 } from './geometry';
 import { WORLD_WIDTH, WORLD_HEIGHT, WORLD_UNIT } from './common';
+import { CameraAttrs } from './Camera';
 
 export interface WorldState {
   dragSubject: undefined | DragSubject;
   camera: CameraAttrs;
+  objects: ObjAttrs[];
+  entities: EntityAttrs[];
+}
+
+interface ObjAttrs {
+  name: string;
+  pts: Vec2[];
+}
+
+interface EntityAttrs {
+  id: string;
+  obj: string;
+  coords: HMat2;
+  color: string;
 }
 
 export const initWorldState: WorldState = {
   dragSubject: undefined,
   camera: {
     coords: new HMat2(
+      0,
+      -1,
       1,
       0,
-      0,
-      1,
       WORLD_WIDTH / WORLD_UNIT / 2,
-      WORLD_HEIGHT / WORLD_UNIT / 2
+      WORLD_HEIGHT / WORLD_UNIT / 1.3
     ),
     fl: 1,
     width: 1.5,
     clip: 5,
   },
+  objects: [
+    {
+      name: 'square',
+      pts: [
+        new Vec2(-0.5, -0.5),
+        new Vec2(0.5, -0.5),
+        new Vec2(0.5, 0.5),
+        new Vec2(-0.5, 0.5),
+      ],
+    },
+  ],
+  entities: [
+    {
+      id: 'square-1',
+      obj: 'square',
+      coords: new HMat2(
+        1,
+        0,
+        0,
+        1,
+        WORLD_WIDTH / WORLD_UNIT / 4,
+        WORLD_HEIGHT / WORLD_UNIT / 4
+      ),
+      color: '#ff0000',
+    },
+    {
+      id: 'square-2',
+      obj: 'square',
+      coords: new HMat2(
+        Math.cos(Math.PI / 3),
+        -Math.sin(Math.PI / 3),
+        Math.sin(Math.PI / 3),
+        Math.cos(Math.PI / 3),
+        WORLD_WIDTH / WORLD_UNIT / 1.3,
+        WORLD_HEIGHT / WORLD_UNIT / 4
+      ),
+      color: '#00ff00',
+    },
+    {
+      id: 'square-3',
+      obj: 'square',
+      coords: new HMat2(
+        Math.cos(Math.PI / 5),
+        -Math.sin(Math.PI / 5),
+        Math.sin(Math.PI / 5),
+        Math.cos(Math.PI / 5),
+        WORLD_WIDTH / WORLD_UNIT / 2,
+        WORLD_HEIGHT / WORLD_UNIT / 5
+      ),
+      color: '#0000ff',
+    },
+  ],
 };
 
 export enum ActionType {
